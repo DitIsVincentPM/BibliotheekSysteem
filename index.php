@@ -18,16 +18,10 @@ $user = $result[0];
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
-    <div class="collapse navbar-collapse " id="navbarNav">
+    <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav">
             <li class="nav-item active">
                 <a class="nav-link" href="#">Home</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Boeken</a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link" href="#">Gebruikers</a>
             </li>
             <?php
             if (isset($user)) {
@@ -41,9 +35,53 @@ $user = $result[0];
     </div>
 </nav>
     <div class="container mt-5">
+        <div style="display: flex; column-gap: 35px; column-count: 1" class="mb-5">
+            <div class="w-33">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="card-title">Boeken:</h1>
+                    </div>
+                    <div class="card-body">
+                    <?php
+                        $result = $db->query("SELECT * FROM boeken");
+                        $boeken = $result;
+                    echo "<p>" . count($result) . "</p>";
+                    ?>
+                    </div>
+                </div>
+            </div>
+            <div class="w-33">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="card-title">Gebruikers:</h1>
+                    </div>
+                    <div class="card-body">
+                    <?php
+                    $result = $db->query("SELECT * FROM gebruikers");
+                    $boeken = $result;
+                    echo "<p>" . count($result) . "</p>";
+                    ?>
+                    </div>
+                </div>
+            </div>
+            <div class="w-33">
+                <div class="card">
+                    <div class="card-header">
+                        <h1 class="card-title">Uitleningen:</h1>
+                    </div>
+                    <div class="card-body">
+                    <?php
+                    $result = $db->query("SELECT * FROM uitleningen");
+                    $boeken = $result;
+                    echo "<p>" . count($result) . "</p>";
+                    ?>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div class="card">
             <div class="card-header">
-                <h1 class="card-title">Boeken</h1>
+                <h1 class="card-title">Jouw Boeken</h1>
             </div>
             <div class="card-body">
                 <table class="table">
@@ -52,6 +90,7 @@ $user = $result[0];
                         <th>Titel</th>
                         <th>Auteur</th>
                         <th>Jaar</th>
+                        <th></th>
                     </tr>
                     </thead>
                     <tbody>
@@ -64,7 +103,7 @@ $user = $result[0];
                         echo "<td>" . $boek['titel'] . "</td>";
                         echo "<td>" . $boek['auteur'] . "</td>";
                         echo "<td>" . $boek['publicatiejaar'] . "</td>";
-                        echo "</tr>";
+                        echo "<td><a class='text-decoration-underline' href='boeken/view.php?id=" . $boek['id'] . "'>Details</a>    <a class='text-red text-decoration-underline' href='#' onclick='deleteBook(" . $boek['id'] . ")'>Delete</a></td>";                        echo "</tr>";
                     }
                     ?>
                     </tbody>
@@ -72,6 +111,27 @@ $user = $result[0];
             </div>
         </div>
     </div>
+    <script>
+        function deleteBook(id) {
+            if (confirm('Ben je zeker dat je dit boek wilt verwijderen?')) {
+                fetch('boeken/delete.php', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: new URLSearchParams({
+                        'id': id
+                    })
+                })
+                    .then(response => response.text())
+                    .then(data => {
+                        alert(data);
+                        location.reload();
+                    })
+                    .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
 </nav>
 </body>
 </html>
