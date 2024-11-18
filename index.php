@@ -12,10 +12,11 @@ $user = $result[0];
 <head>
     <title>Boeken</title>
     <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/core/dist/css/tabler.min.css">
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
@@ -30,108 +31,165 @@ $user = $result[0];
                 echo '<li class="nav-item ml-auto user-nav-item"><a class="nav-link" href="">Login</a></li>';
             }
             ?>
-
         </ul>
     </div>
 </nav>
-    <div class="container mt-5">
-        <div style="display: flex; column-gap: 35px; column-count: 1" class="mb-5">
-            <div class="w-33">
-                <div class="card">
-                    <div class="card-header">
-                        <h1 class="card-title">Boeken:</h1>
-                    </div>
-                    <div class="card-body">
-                    <?php
-                        $result = $db->query("SELECT * FROM boeken");
-                        $boeken = $result;
-                    echo "<p>" . count($result) . "</p>";
-                    ?>
-                    </div>
+<div class="container mt-5">
+    <div class="row mb-5">
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Boeken:</h3>
                 </div>
-            </div>
-            <div class="w-33">
-                <div class="card">
-                    <div class="card-header">
-                        <h1 class="card-title">Gebruikers:</h1>
-                    </div>
-                    <div class="card-body">
+                <div class="card-body">
                     <?php
-                    $result = $db->query("SELECT * FROM gebruikers");
-                    $boeken = $result;
+                    $result = $db->query("SELECT * FROM boeken");
                     echo "<p>" . count($result) . "</p>";
                     ?>
-                    </div>
-                </div>
-            </div>
-            <div class="w-33">
-                <div class="card">
-                    <div class="card-header">
-                        <h1 class="card-title">Uitleningen:</h1>
-                    </div>
-                    <div class="card-body">
-                    <?php
-                    $result = $db->query("SELECT * FROM uitleningen");
-                    $boeken = $result;
-                    echo "<p>" . count($result) . "</p>";
-                    ?>
-                    </div>
                 </div>
             </div>
         </div>
-        <div class="card">
-            <div class="card-header">
-                <h1 class="card-title">Jouw Boeken</h1>
-            </div>
-            <div class="card-body">
-                <table class="table">
-                    <thead>
-                    <tr>
-                        <th>Titel</th>
-                        <th>Auteur</th>
-                        <th>Jaar</th>
-                        <th></th>
-                    </tr>
-                    </thead>
-                    <tbody>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Gebruikers:</h3>
+                </div>
+                <div class="card-body">
                     <?php
-                    $result = $db->query("SELECT * FROM boeken");
-                    $boeken = $result;
-
-                    foreach ($boeken as $boek) {
-                        echo "<tr>";
-                        echo "<td>" . $boek['titel'] . "</td>";
-                        echo "<td>" . $boek['auteur'] . "</td>";
-                        echo "<td>" . $boek['publicatiejaar'] . "</td>";
-                        echo "<td><a class='text-decoration-underline' href='boeken/view.php?id=" . $boek['id'] . "'>Details</a>    <a class='text-red text-decoration-underline' href='#' onclick='deleteBook(" . $boek['id'] . ")'>Delete</a></td>";                        echo "</tr>";
-                    }
+                    $result = $db->query("SELECT * FROM gebruikers");
+                    echo "<p>" . count($result) . "</p>";
                     ?>
-                    </tbody>
-                </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Uitleningen:</h3>
+                </div>
+                <div class="card-body">
+                    <?php
+                    $result = $db->query("SELECT * FROM uitleningen");
+                    echo "<p>" . count($result) . "</p>";
+                    ?>
+                </div>
             </div>
         </div>
     </div>
-    <script>
-        function deleteBook(id) {
-            if (confirm('Ben je zeker dat je dit boek wilt verwijderen?')) {
-                fetch('boeken/delete.php', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded',
-                    },
-                    body: new URLSearchParams({
-                        'id': id
-                    })
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Jouw Boeken</h3>
+            <div class="card-actions">
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createBookModal">Nieuw Boek</button>
+            </div>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Titel</th>
+                    <th>Auteur</th>
+                    <th>Jaar</th>
+                    <th></th>
+                </tr>
+                </thead>
+                <tbody>
+                <?php
+                $result = $db->query("SELECT * FROM boeken");
+                foreach ($result as $boek) {
+                    echo "<tr>";
+                    echo "<td>" . htmlspecialchars($boek['titel']) . "</td>";
+                    echo "<td>" . htmlspecialchars($boek['auteur']) . "</td>";
+                    echo "<td>" . htmlspecialchars($boek['publicatiejaar']) . "</td>";
+                    echo "<td>
+                        <a class='text-decoration-underline' href='boeken/view.php?id=" . $boek['id'] . "'>Details</a>
+                        <a class='text-danger text-decoration-underline' href='#' onclick='deleteBook(" . $boek['id'] . ")'>Delete</a>
+                    </td>";
+                    echo "</tr>";
+                }
+                ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Create Book Modal -->
+<div class="modal fade" id="createBookModal" tabindex="-1" aria-labelledby="createBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="createBookModalLabel">Nieuw Boek Toevoegen</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="createBookForm">
+                    <div class="mb-3">
+                        <label for="bookName" class="form-label">Naam</label>
+                        <input type="text" class="form-control" id="bookName" name="naam" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookAuthor" class="form-label">Auteur</label>
+                        <input type="text" class="form-control" id="bookAuthor" name="auteur" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="publicationYear" class="form-label">Publicatiejaar</label>
+                        <input type="number" class="form-control" id="publicationYear" name="publicatiejaar" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="availability" class="form-label">Beschikbaar</label>
+                        <select class="form-select" id="availability" name="beschikbaar" required>
+                            <option value="1">Ja</option>
+                            <option value="0">Nee</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuleren</button>
+                <button type="button" class="btn btn-primary" onclick="createBook()">Boek Aanmaken</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function deleteBook(id) {
+        if (confirm('Ben je zeker dat je dit boek wilt verwijderen?')) {
+            fetch('boeken/delete.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    'id': id
                 })
-                    .then(response => response.text())
-                    .then(data => {
-                        alert(data);
-                        location.reload();
-                    })
-                    .catch(error => console.error('Error:', error));
-            }
+            })
+                .then(response => response.text())
+                .then(data => {
+                    alert(data);
+                    location.reload();
+                })
+                .catch(error => console.error('Error:', error));
         }
-    </script>
-</nav>
+    }
+
+    function createBook() {
+        const formData = new FormData(document.getElementById('createBookForm'));
+
+        fetch('boeken/create.php', {
+            method: 'POST',
+            body: formData,
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload();
+            })
+            .catch(error => console.error('Error:', error));
+    }
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/@tabler/core/dist/js/tabler.min.js"></script>
 </body>
 </html>

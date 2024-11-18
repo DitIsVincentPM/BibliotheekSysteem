@@ -1,16 +1,26 @@
 <?php
 require '../classes/DatabaseOperations.php';
 
-if (isset($_POST['publicatiejaar']) && isset($_POST['naam']) && isset($_POST['auteur']) && isset($_POST['beschikbaar'])) {
+if (!empty($_POST['publicatiejaar']) && !empty($_POST['naam']) && !empty($_POST['auteur']) && isset($_POST['beschikbaar'])) {
     $publicatiejaar = $_POST['publicatiejaar'];
     $naam = $_POST['naam'];
     $auteur = $_POST['auteur'];
-    $beschikbaar = $_POST['beschikbaar'];
+    $beschikbaar = filter_var($_POST['beschikbaar'], FILTER_VALIDATE_BOOLEAN);
 
     $db = new DatabaseOperations();
-    $db->insert("boeken", [$publicatiejaar, $naam, $auteur, $beschikbaar]);
-    echo "Book created successfully";
+
+    // Voer de INSERT uit
+    if ($db->insert("boeken", [
+        "publicatiejaar" => $publicatiejaar,
+        "titel" => $naam,
+        "auteur" => $auteur,
+        "beschikbaar" => $beschikbaar
+    ])) {
+        echo "Boek succesvol toegevoegd!";
+    } else {
+        echo "Er is een fout opgetreden bij het toevoegen van het boek.";
+    }
 } else {
-    echo "Missing parameters";
+    echo "Ontbrekende parameters!";
 }
 ?>

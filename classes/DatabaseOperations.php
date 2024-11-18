@@ -19,11 +19,22 @@ class DatabaseOperations {
     }
 
     public function insert($table, $data) {
+        if (!is_array($data)) {
+            throw new InvalidArgumentException("Data must be an associative array");
+        }
+
         $columns = implode(", ", array_keys($data));
         $placeholders = implode(", ", array_fill(0, count($data), "?"));
         $sql = "INSERT INTO $table ($columns) VALUES ($placeholders)";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute(array_values($data));
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(array_values($data));
+            return true;
+        } catch (PDOException $e) {
+            error_log("Database Insert Error: " . $e->getMessage());
+            die("Database Insert Error: " . $e->getMessage());
+        }
     }
 
     public function update($table, $data, $where) {
