@@ -38,10 +38,22 @@ class DatabaseOperations {
     }
 
     public function update($table, $data, $where) {
+        if (!is_array($data) || !is_array($where)) {
+            throw new InvalidArgumentException("Data and where conditions must be associative arrays");
+        }
+
         $columns = implode(" = ?, ", array_keys($data)) . " = ?";
-        $sql = "UPDATE $table SET $columns WHERE $where";
-        $stmt = $this->pdo->prepare($sql);
-        return $stmt->execute(array_values($data));
+        $whereClause = implode(" = ? AND ", array_keys($where)) . " = ?";
+        $sql = "UPDATE $table SET $columns WHERE $whereClause";
+
+        try {
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute(array_merge(array_values($data), array_values($where)));
+            return true;
+        } catch (PDOException $e) {
+            error_log("Database Update Error: " . $e->getMessage());
+            die("Database Update Error: " . $e->getMessage());
+        }
     }
 
     public function delete($table, $where) {

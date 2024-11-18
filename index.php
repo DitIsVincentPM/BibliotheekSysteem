@@ -83,6 +83,7 @@ $user = $result[0];
                 </div>
             </div>
         </div>
+
         <div class="col-lg-4">
             <div class="card">
                 <div class="card-header">
@@ -123,10 +124,10 @@ $user = $result[0];
                     echo "<td>" . htmlspecialchars($boek['auteur']) . "</td>";
                     echo "<td>" . htmlspecialchars($boek['publicatiejaar']) . "</td>";
                     echo "<td><a class='text-decoration-underline' href='boeken/view.php?id=" . $boek['id'] . "'>Details</a> ";
-                    if($boek['beschikbaar'] == 0) {
-                        echo "<a class='text-decoration-underline' href='uitleningen/lenen.php?boek_id=" . $boek['id'] . "&gebruiker_id=" . $user['id'] . "'>Uitlenen</a> ";
+                    if($boek['beschikbaar'] == 1) {
+                        echo "<a class='text-decoration-underline' onclick='lendBook(" . $boek['id'] . ", " . $user['id'] . ")'>Uitlenen</a> ";
                     } else {
-                        echo "<a class='text-decoration-underline' href='uitleningen/lenen.php?boek_id=" . $boek['id'] . "&gebruiker_id=" . $user['id'] . "'>Geef terug</a> ";
+                        echo "<a class='text-decoration-underline' onclick='returnBook(" . $boek['id'] . ", " . $user['id'] . ")'>Geef terug</a> ";
                     }
                     echo "<a class='text-danger text-decoration-underline' href='#' onclick='deleteBook(" . $boek['id'] . ")'>Delete</a></td>";
                     echo "</tr>";
@@ -178,6 +179,46 @@ $user = $result[0];
 </div>
 
 <script>
+    function lendBook(bookId, userId) {
+        const formData = new URLSearchParams();
+        formData.append('boek_id', bookId);
+        formData.append('gebruiker_id', userId);
+
+        fetch('uitleningen/lenen.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData,
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload(); // Reload the page to reflect the updated status
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
+    function returnBook(bookId, userId) {
+        const formData = new URLSearchParams();
+        formData.append('boek_id', bookId);
+        formData.append('gebruiker_id', userId);
+
+        fetch('uitleningen/terugbrengen.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: formData,
+        })
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+                location.reload(); // Reload the page to reflect the updated status
+            })
+            .catch(error => console.error('Error:', error));
+    }
+
     function deleteBook(id) {
         if (confirm('Ben je zeker dat je dit boek wilt verwijderen?')) {
             fetch('boeken/delete.php', {
