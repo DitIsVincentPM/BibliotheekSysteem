@@ -29,11 +29,23 @@ if (isset($_GET['id'])) {
         </ul>
     </div>
 </nav>
+<div class="page-header bg-gray-700 d-print-none text-white pt-5 pb-5">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <!-- Page pre-title -->
+                <div class="page-pretitle">
+                    <a href="../index.php">Dashboard</a> < Boeken < <span class="text-decoration-underline">View</span>
+                </div>
+                <h2 class="page-title text-black">
+                    <?php echo $boek['titel']; ?>
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container mt-5">
     <div class="card">
-        <div class="card-header">
-            <h1 class="card-title"><?php echo $boek['titel']; ?></h1>
-        </div>
         <div class="card-body">
             <p><strong>Auteur:</strong> <?php echo $boek['auteur']; ?></p>
             <p><strong>Jaar:</strong> <?php echo $boek['publicatiejaar']; ?></p>

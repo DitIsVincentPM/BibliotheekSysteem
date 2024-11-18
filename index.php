@@ -34,7 +34,28 @@ $user = $result[0];
         </ul>
     </div>
 </nav>
+
+<div class="page-header bg-gray-700 d-print-none text-white pt-5 pb-5">
+    <div class="container-xl">
+        <div class="row g-2 align-items-center">
+            <div class="col">
+                <!-- Page pre-title -->
+                <div class="page-pretitle">
+                    <span class="text-decoration-underline">Dashboard</span>
+                </div>
+                <h2 class="page-title text-black">
+                    Statistics Overview
+                </h2>
+            </div>
+        </div>
+    </div>
+</div>
 <div class="container mt-5">
+    <?php
+    if (isset($user)) {
+        echo "<h1 class='text-black text-center'>Welkom, " . $user['naam'] . "</h1>";
+    }
+    ?>
     <div class="row mb-5">
         <div class="col-lg-4">
             <div class="card">
@@ -101,10 +122,13 @@ $user = $result[0];
                     echo "<td>" . htmlspecialchars($boek['titel']) . "</td>";
                     echo "<td>" . htmlspecialchars($boek['auteur']) . "</td>";
                     echo "<td>" . htmlspecialchars($boek['publicatiejaar']) . "</td>";
-                    echo "<td>
-                        <a class='text-decoration-underline' href='boeken/view.php?id=" . $boek['id'] . "'>Details</a>
-                        <a class='text-danger text-decoration-underline' href='#' onclick='deleteBook(" . $boek['id'] . ")'>Delete</a>
-                    </td>";
+                    echo "<td><a class='text-decoration-underline' href='boeken/view.php?id=" . $boek['id'] . "'>Details</a> ";
+                    if($boek['beschikbaar'] == 0) {
+                        echo "<a class='text-decoration-underline' href='uitleningen/lenen.php?boek_id=" . $boek['id'] . "&gebruiker_id=" . $user['id'] . "'>Uitlenen</a> ";
+                    } else {
+                        echo "<a class='text-decoration-underline' href='uitleningen/lenen.php?boek_id=" . $boek['id'] . "&gebruiker_id=" . $user['id'] . "'>Geef terug</a> ";
+                    }
+                    echo "<a class='text-danger text-decoration-underline' href='#' onclick='deleteBook(" . $boek['id'] . ")'>Delete</a></td>";
                     echo "</tr>";
                 }
                 ?>
